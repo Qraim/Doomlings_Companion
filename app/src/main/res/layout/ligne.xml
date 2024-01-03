@@ -34,12 +34,12 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:scrollbars="vertical" >
             <TextView
                 android:id="@+id/textViewTraduction"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:textColor="@color/black"
                 android:text="Traduction"
                 android:textSize="14sp"
