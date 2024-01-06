@@ -1,5 +1,6 @@
 package com.qraim.doomlingscompanion
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.IOException
@@ -40,7 +42,7 @@ class CompanionApp : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 val searchQuery = s.toString()
                 val selectedGameType = spinnerGameType.selectedItem.toString()
-                val selectedCategoryType = spinnerCategoryType.selectedItem.toString()
+                val selectedCategoryType = spinnerCategoryType.selectedItem?.toString() ?: "Tout"
                 adapter.filterByCategoryAndTypeAndName(selectedGameType, selectedCategoryType, searchQuery)
             }
 
@@ -48,8 +50,9 @@ class CompanionApp : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
+
         spinnerGameType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedGameType = parent.getItemAtPosition(position).toString()
                 if (selectedGameType == "Tout") {
                     // Si "Tout" est sélectionné, videz et désactivez le second spinner
@@ -75,7 +78,7 @@ class CompanionApp : AppCompatActivity() {
         spinnerCategoryType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,
-                view: View,
+                view: View?,
                 position: Int,
                 id: Long
             ) {
@@ -100,10 +103,20 @@ class CompanionApp : AppCompatActivity() {
 
         adapter = RecyclerViewAdapter(this)
         cardliste = createAllCards()
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
 
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        adapter = RecyclerViewAdapter(this)
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Déterminez l'orientation de l'écran
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // Mode Paysage: Utilisez GridLayoutManager avec 2 colonnes
+            recyclerView.layoutManager = GridLayoutManager(this, 2)
+        } else {
+            // Mode Portrait: Utilisez LinearLayoutManager
+            recyclerView.layoutManager = LinearLayoutManager(this)
+        }
 
         for (card in cardliste) {
             adapter.ajouter(card)
